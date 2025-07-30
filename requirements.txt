@@ -1,6 +1,7 @@
 Flask>=2.2
 gunicorn
 joblib
+faker
 python-dotenv
 psycopg2-binary>=2.9
 blinker==1.9.0
