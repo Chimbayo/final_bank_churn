@@ -89,10 +89,6 @@ def customers_page():
 def home():
     """Render the login page as the home page"""
     return render_template('index.html')
-@app.route('/alerts')
-def alerts_page():
-    """Render the alerts page"""
-    return render_template('alerts.html')
 # About page route
 @app.route('/about')
 def about():
