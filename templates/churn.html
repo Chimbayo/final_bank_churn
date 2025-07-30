@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Churn Prediction Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/js/churn.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/churn.js') }}"></script>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    </head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="text-xl">
+            <img src="/static/images/logo.png" alt="Logo" style="height: 32px;">
+            <span>BANK CUSTOMER CHURN PREDICTION SYSTEM</span>
+        </div>
+        <div class="space-x-4">
+            <a href="/about">About</a>
+            <a href="/contacts">Contacts</a>
+            <a href="/index">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Header Metrics Panel -->
+    <div class="header">
+        <a href="/customers" class="metric-link">
+            <div class="metric-box">
+                <h3>Total Customers</h3>
+                <div id="total-customers">Loading...</div>
+            </div>
+        </a>
+        <a href="/AtRiskcustomers" class="metric-link">
+            <div class="metric-box">
+                <h3>At-Risk Customers</h3>
+                <div id="predicted-churn">Loading...</div>
+            </div>
+        </a>
+        <div class="metric-box">
+            <h3>Churn-Risk(%)</h3>
+            <div id="churn_rate">Loading...</div>
+        </div>
+        
+        <a href="/alerts" class="metric-link">
+            <div class="metric-box alerts-metric">
+                <h3>Alerts!</h3>
+                <div id="alerts-count">Loading...</div>
+            </div>
+        </a>
+        
+        <div class="metric-box">
+            <h3>Real-Time Analytics</h3>
+            <p>
+                <a href="/churn_summary">View Analytics</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content Panel -->
+    <div class="main-panel">
+        <!-- Table Controls -->
+        <div class="table-controls">
+            <div class="flex-row">
+                <h2>Risk Levels of Leaving</h2>
+                <div class="controls-group">
+                    <button id="low-risk-btn" class="btn risk-btn active">Low Risk</button>
+                    <button id="medium-risk-btn" class="btn risk-btn">Medium Risk</button>
+                    <button id="high-risk-btn" class="btn risk-btn">High Risk</button>
+                    <button id="export-btn" class="btn">Export to CSV</button>
+                    <button id="update-btn" class="btn">Run Simulation</button>
+                </div>
+            </div>
+            <div id="status-message" class="status" style="display: none;"></div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="table-container">
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Customer ID</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>District</th>
+                        <th>Region</th>
+                        <th>Location Type</th>
+                        <th>Customer Type</th>
+                        <th>Employment Status</th>
+                        <th>Income Level</th>
+                        <th>Education Level</th>
+                        <th>Tenure (years)</th>
+                        <th>Balance</th>
+                        <th>Credit Score</th>
+                        <th>Outstanding Loans</th>
+                        <th>Products Count</th>
+                        <th>Mobile Banking</th>
+                        <th>Transactions/Month</th>
+                        <th>Complaints</th>
+                        <th>Branch Distance (km)</th>
+                        <th>Network Quality</th>
+                        <th>Owns Mobile</th>
+                        <th>Prediction</th>
+                        <th>Probability</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <!-- Data will be loaded dynamically via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('update-btn').addEventListener('click', async function () {
+    const btn = this;
+    const statusDiv = document.getElementById('status-message');
+
+    try {
+        // Show loading state
+        btn.disabled = true;
+        btn.textContent = 'Simulating...';
+        statusDiv.style.display = 'none';
+
+        // Call the API endpoint
+        const response = await fetch('/replace_all_customers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        const result = await response.json();
+
+        // Show result
+        statusDiv.style.display = 'block';
+        if (result.success) {
+            statusDiv.className = 'status success';
+            statusDiv.textContent = `✅ ${result.message}`;
+
+            // Optional: Refresh data display after 2 seconds
+            setTimeout(() => {
+                // window.location.reload();
+                // OR update your data display without refresh
+            }, 2000);
+
+            // Hide the success message after 5 seconds
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+                statusDiv.textContent = '';
+            }, 5000);
+        } else {
+            statusDiv.className = 'status error';
+            statusDiv.textContent = `❌ ${result.error}`;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        statusDiv.style.display = 'block';
+        statusDiv.className = 'status error';
+        statusDiv.textContent = 'Failed to update customer data. Please check console for details.';
+    } finally {
+        // Reset button state
+        btn.disabled = false;
+        btn.textContent = 'Run Simulation';
+    }
+});
+    </script>
+</body>
+</html>
