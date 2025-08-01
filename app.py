@@ -192,7 +192,7 @@ from psycopg2.extras import execute_batch
 def replace_all_customers():
     """Replace all customer data with 508 randomly generated records"""
     try:
-        n_samples = 508
+        n_samples = 1783
 
         # Generate random data with numerical values for database
         random_data = {
@@ -894,3 +894,4 @@ if __name__ == '__main__':
         debug=os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
     )
     
+
